@@ -407,7 +407,7 @@ export default function App() {
       <FeedbackWidget
         appId="${selectedAppForDetails.id}"
         apiKey="${selectedAppForDetails.apiKey}"
-        apiBaseUrl="http://localhost:4000"
+        apiBaseUrl="https://thebridgeserver-production-fc18.up.railway.app"
       />
     </div>
   );
@@ -430,33 +430,30 @@ export default function App() {
             <button
               type="button"
               onClick={openInbox}
-              className={`w-full rounded px-3 py-2 text-left text-sm font-medium transition ${
-                view === "INBOX"
+              className={`w-full rounded px-3 py-2 text-left text-sm font-medium transition ${view === "INBOX"
                   ? "bg-slate-200 text-slate-900"
                   : "text-slate-700 hover:bg-slate-100"
-              }`}
+                }`}
             >
               Inbox
             </button>
             <button
               type="button"
               onClick={openApplications}
-              className={`w-full rounded px-3 py-2 text-left text-sm font-medium transition ${
-                view === "APPLICATIONS" || view === "APP_DETAILS"
+              className={`w-full rounded px-3 py-2 text-left text-sm font-medium transition ${view === "APPLICATIONS" || view === "APP_DETAILS"
                   ? "bg-slate-200 text-slate-900"
                   : "text-slate-700 hover:bg-slate-100"
-              }`}
+                }`}
             >
               Applications
             </button>
             <button
               type="button"
               onClick={openOnboarding}
-              className={`w-full rounded px-3 py-2 text-left text-sm font-medium transition ${
-                view === "ONBOARDING"
+              className={`w-full rounded px-3 py-2 text-left text-sm font-medium transition ${view === "ONBOARDING"
                   ? "bg-slate-200 text-slate-900"
                   : "text-slate-700 hover:bg-slate-100"
-              }`}
+                }`}
             >
               New App
             </button>
@@ -475,11 +472,10 @@ export default function App() {
                 <button
                   type="button"
                   onClick={() => setInboxAppId("ALL")}
-                  className={`w-full rounded px-3 py-1.5 text-left text-sm ${
-                    inboxAppId === "ALL"
+                  className={`w-full rounded px-3 py-1.5 text-left text-sm ${inboxAppId === "ALL"
                       ? "bg-slate-200 font-medium text-slate-900"
                       : "text-slate-700 hover:bg-slate-100"
-                  }`}
+                    }`}
                 >
                   All Apps
                 </button>
@@ -490,11 +486,10 @@ export default function App() {
                       key={a.id}
                       type="button"
                       onClick={() => setInboxAppId(a.id)}
-                      className={`w-full rounded px-3 py-1.5 text-left text-sm ${
-                        inboxAppId === a.id
+                      className={`w-full rounded px-3 py-1.5 text-left text-sm ${inboxAppId === a.id
                           ? "bg-slate-200 font-medium text-slate-900"
                           : "text-slate-700 hover:bg-slate-100"
-                      }`}
+                        }`}
                     >
                       <div className="flex items-center justify-between">
                         <span>{a.name}</span>
@@ -803,21 +798,21 @@ export default function App() {
                         {(newFieldType === "select" ||
                           newFieldType === "radio" ||
                           newFieldType === "checkbox") && (
-                          <div>
-                            <label className="text-xs font-semibold text-slate-600">
-                              Options (one per line)
-                            </label>
-                            <textarea
-                              className="mt-1 w-full rounded border border-slate-300 px-2 py-1 text-xs outline-none focus:border-slate-400"
-                              value={newFieldOptions}
-                              onChange={(e) =>
-                                setNewFieldOptions(e.target.value)
-                              }
-                              placeholder="Option 1&#10;Option 2&#10;Option 3"
-                              rows={3}
-                            />
-                          </div>
-                        )}
+                            <div>
+                              <label className="text-xs font-semibold text-slate-600">
+                                Options (one per line)
+                              </label>
+                              <textarea
+                                className="mt-1 w-full rounded border border-slate-300 px-2 py-1 text-xs outline-none focus:border-slate-400"
+                                value={newFieldOptions}
+                                onChange={(e) =>
+                                  setNewFieldOptions(e.target.value)
+                                }
+                                placeholder="Option 1&#10;Option 2&#10;Option 3"
+                                rows={3}
+                              />
+                            </div>
+                          )}
 
                         <div className="flex items-center gap-2">
                           <input

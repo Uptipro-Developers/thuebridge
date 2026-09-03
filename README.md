@@ -8,23 +8,23 @@ Monorepo with:
 
 ## Quick start (local)
 
-1) Start the API + DB
+1. Start the API + DB
 
 - `npm -w server run dev`
 
-The server runs on `http://localhost:4000` and uses SQLite at `server/dev.db`.
+The server runs on `https://thebridgeserver-production-fc18.up.railway.app` and uses SQLite at `server/dev.db`.
 
-2) Start the Admin dashboard
+2. Start the Admin dashboard
 
 - `npm -w admin run dev`
 
 Set `admin/.env` from `admin/.env.example` if needed.
 
-3) Create an Application + API key
+3. Create an Application + API key
 
 Open the Admin app → **App Management** → create an internal app (e.g. “Sales CRM”).
 
-4) Test the Widget
+4. Test the Widget
 
 Set `widget/.env` from `widget/.env.example` using the `appId` + `apiKey` from step 3, then:
 

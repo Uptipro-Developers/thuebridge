@@ -3,13 +3,13 @@ import { useEffect, useState } from "react";
 type FormField = {
   id: string;
   fieldType:
-    | "text"
-    | "textarea"
-    | "email"
-    | "number"
-    | "select"
-    | "radio"
-    | "checkbox";
+  | "text"
+  | "textarea"
+  | "email"
+  | "number"
+  | "select"
+  | "radio"
+  | "checkbox";
   label: string;
   name: string;
   required: boolean;
@@ -38,7 +38,7 @@ type Props = {
   userInfo?: UserInfo;
 };
 
-const defaultApiBaseUrl = "http://localhost:4000";
+const defaultApiBaseUrl = "https://thebridgeserver-production-fc18.up.railway.app";
 
 function parseOptions(options: unknown): string[] {
   if (Array.isArray(options)) {

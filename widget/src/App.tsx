@@ -1,6 +1,6 @@
 import { FeedbackWidget } from './FeedbackWidget';
 
-const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? 'http://localhost:4000';
+const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? 'https://thebridgeserver-production-fc18.up.railway.app';
 const appId = (import.meta.env.VITE_APP_ID as string | undefined) ?? '';
 const apiKey = (import.meta.env.VITE_API_KEY as string | undefined) ?? '';
 
