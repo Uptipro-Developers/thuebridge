@@ -407,7 +407,7 @@ export default function App() {
       <FeedbackWidget
         appId="${selectedAppForDetails.id}"
         apiKey="${selectedAppForDetails.apiKey}"
-        apiBaseUrl="https://thebridgeserver-production-fc18.up.railway.app"
+        apiBaseUrl="https://thuebridge.onrender.com"
       />
     </div>
   );
@@ -431,8 +431,8 @@ export default function App() {
               type="button"
               onClick={openInbox}
               className={`w-full rounded px-3 py-2 text-left text-sm font-medium transition ${view === "INBOX"
-                  ? "bg-slate-200 text-slate-900"
-                  : "text-slate-700 hover:bg-slate-100"
+                ? "bg-slate-200 text-slate-900"
+                : "text-slate-700 hover:bg-slate-100"
                 }`}
             >
               Inbox
@@ -441,8 +441,8 @@ export default function App() {
               type="button"
               onClick={openApplications}
               className={`w-full rounded px-3 py-2 text-left text-sm font-medium transition ${view === "APPLICATIONS" || view === "APP_DETAILS"
-                  ? "bg-slate-200 text-slate-900"
-                  : "text-slate-700 hover:bg-slate-100"
+                ? "bg-slate-200 text-slate-900"
+                : "text-slate-700 hover:bg-slate-100"
                 }`}
             >
               Applications
@@ -451,8 +451,8 @@ export default function App() {
               type="button"
               onClick={openOnboarding}
               className={`w-full rounded px-3 py-2 text-left text-sm font-medium transition ${view === "ONBOARDING"
-                  ? "bg-slate-200 text-slate-900"
-                  : "text-slate-700 hover:bg-slate-100"
+                ? "bg-slate-200 text-slate-900"
+                : "text-slate-700 hover:bg-slate-100"
                 }`}
             >
               New App
@@ -473,8 +473,8 @@ export default function App() {
                   type="button"
                   onClick={() => setInboxAppId("ALL")}
                   className={`w-full rounded px-3 py-1.5 text-left text-sm ${inboxAppId === "ALL"
-                      ? "bg-slate-200 font-medium text-slate-900"
-                      : "text-slate-700 hover:bg-slate-100"
+                    ? "bg-slate-200 font-medium text-slate-900"
+                    : "text-slate-700 hover:bg-slate-100"
                     }`}
                 >
                   All Apps
@@ -487,8 +487,8 @@ export default function App() {
                       type="button"
                       onClick={() => setInboxAppId(a.id)}
                       className={`w-full rounded px-3 py-1.5 text-left text-sm ${inboxAppId === a.id
-                          ? "bg-slate-200 font-medium text-slate-900"
-                          : "text-slate-700 hover:bg-slate-100"
+                        ? "bg-slate-200 font-medium text-slate-900"
+                        : "text-slate-700 hover:bg-slate-100"
                         }`}
                     >
                       <div className="flex items-center justify-between">

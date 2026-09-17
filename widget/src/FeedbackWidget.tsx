@@ -38,7 +38,7 @@ type Props = {
   userInfo?: UserInfo;
 };
 
-const defaultApiBaseUrl = "https://thebridgeserver-production-fc18.up.railway.app";
+const defaultApiBaseUrl = "https://thuebridge.onrender.com";
 
 function parseOptions(options: unknown): string[] {
   if (Array.isArray(options)) {
