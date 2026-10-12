@@ -27,6 +27,61 @@ import {
 type View = "INBOX" | "ONBOARDING" | "APPLICATIONS" | "APP_DETAILS";
 type SortMode = "IMPACT_DESC" | "CREATED_DESC" | "CREATED_ASC";
 
+function asRecord(value: unknown): Record<string, unknown> | null {
+  return typeof value === "object" && value !== null && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : null;
+}
+
+function metadataUrl(metadata: unknown): string | null {
+  const value = asRecord(metadata)?.url;
+  return typeof value === "string" && value.trim() ? value : null;
+}
+
+function safeHttpUrl(value: string): string | null {
+  try {
+    const url = new URL(value);
+    return url.protocol === "http:" || url.protocol === "https:"
+      ? url.href
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+function displayMetadataValue(value: unknown): string | null {
+  if (typeof value === "string") return value.trim() || null;
+  if (typeof value === "number" || typeof value === "boolean") {
+    return String(value);
+  }
+  if (Array.isArray(value)) {
+    const text = value.map(String).join(", ").trim();
+    return text || null;
+  }
+  return null;
+}
+
+function whatHappened(metadata: unknown): string | null {
+  const metadataRecord = asRecord(metadata);
+  const formData = asRecord(metadataRecord?.formData);
+  const sources = [formData, metadataRecord];
+
+  for (const source of sources) {
+    if (!source) continue;
+    const entry = Object.entries(source).find(
+      ([key]) => key.replace(/[^a-z0-9]/gi, "").toLowerCase() === "whathappened",
+    );
+    if (entry) return displayMetadataValue(entry[1]);
+  }
+
+  return null;
+}
+
+function csvCell(value: string): string {
+  const safeValue = /^[=+\-@\t\r]/.test(value) ? `'${value}` : value;
+  return `"${safeValue.replace(/"/g, '""')}"`;
+}
+
 export default function App() {
   // Global state
   const [view, setView] = useState<View>("INBOX");
@@ -158,6 +213,32 @@ export default function App() {
       );
       setError(e instanceof Error ? e.message : "Failed to update status");
     }
+  }
+
+  function exportVisibleReports() {
+    const rows = visibleReports.map((report) => [
+      report.module,
+      impactLabel(report.impactLevel),
+      metadataUrl(report.metadataJson) ?? "",
+      whatHappened(report.metadataJson) ?? "",
+      statusLabel(report.status),
+      new Date(report.createdAt).toLocaleString(),
+    ]);
+    const csv = [
+      ["Module", "Impact", "URL", "What happened", "Status", "Created"],
+      ...rows,
+    ]
+      .map((row) => row.map(csvCell).join(","))
+      .join("\n");
+    const blob = new Blob([`\uFEFF${csv}`], { type: "text/csv;charset=utf-8" });
+    const downloadUrl = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = downloadUrl;
+    link.download = `feedback-reports-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(downloadUrl);
   }
 
   function openInbox() {
@@ -1111,75 +1192,112 @@ export default function App() {
                     reports
                   </div>
 
-                  <label className="flex items-center gap-2 text-sm text-slate-700">
-                    <span className="text-slate-600">Sort</span>
-                    <select
-                      className="rounded border border-slate-300 bg-white px-2 py-1 text-sm outline-none focus:border-slate-400"
-                      value={sortMode}
-                      onChange={(e) => setSortMode(e.target.value as SortMode)}
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      className="rounded border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                      onClick={exportVisibleReports}
+                      disabled={visibleReports.length === 0}
                     >
-                      <option value="IMPACT_DESC">
-                        Business Impact (High → Low)
-                      </option>
-                      <option value="CREATED_DESC">
-                        Created (Newest first)
-                      </option>
-                      <option value="CREATED_ASC">
-                        Created (Oldest first)
-                      </option>
-                    </select>
-                  </label>
+                      Export CSV
+                    </button>
+                    <label className="flex items-center gap-2 text-sm text-slate-700">
+                      <span className="text-slate-600">Sort</span>
+                      <select
+                        className="rounded border border-slate-300 bg-white px-2 py-1 text-sm outline-none focus:border-slate-400"
+                        value={sortMode}
+                        onChange={(e) => setSortMode(e.target.value as SortMode)}
+                      >
+                        <option value="IMPACT_DESC">
+                          Business Impact (High → Low)
+                        </option>
+                        <option value="CREATED_DESC">
+                          Created (Newest first)
+                        </option>
+                        <option value="CREATED_ASC">
+                          Created (Oldest first)
+                        </option>
+                      </select>
+                    </label>
+                  </div>
                 </div>
 
-                <div className="overflow-hidden rounded border border-slate-200 bg-white">
-                  <table className="w-full table-fixed">
+                <div className="overflow-x-auto rounded border border-slate-200 bg-white">
+                  <table className="min-w-[1080px] w-full table-fixed">
                     <thead className="bg-slate-50">
                       <tr className="text-left text-xs font-semibold uppercase tracking-wide text-slate-600">
-                        <th className="w-40 px-4 py-3">Module</th>
-                        <th className="w-44 px-4 py-3">Impact</th>
-                        <th className="px-4 py-3">Description</th>
-                        <th className="w-40 px-4 py-3">Status</th>
+                        <th className="w-36 px-4 py-3">Module</th>
+                        <th className="w-36 px-4 py-3">Impact</th>
+                        <th className="px-4 py-3">URL</th>
+                        <th className="w-80 px-4 py-3">What happened</th>
+                        <th className="w-36 px-4 py-3">Status</th>
                         <th className="w-40 px-4 py-3">Created</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                      {visibleReports.map((r) => (
-                        <tr
-                          key={r.id}
-                          className="cursor-pointer text-sm hover:bg-slate-50"
-                          onClick={() => setActiveReport(r)}
-                        >
-                          <td className="px-4 py-3 text-slate-700">
-                            {r.module}
-                          </td>
-                          <td className="px-4 py-3 text-slate-700">
-                            {impactLabel(r.impactLevel)}
-                          </td>
-                          <td className="px-4 py-3 text-slate-700">
-                            <div className="truncate">{r.description}</div>
-                          </td>
-                          <td className="px-4 py-3">
-                            <button
-                              type="button"
-                              className="rounded border border-slate-300 bg-white px-3 py-1.5 text-sm hover:bg-slate-50"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                onToggleStatus(r);
-                              }}
-                            >
-                              {statusLabel(r.status)}
-                            </button>
-                          </td>
-                          <td className="px-4 py-3 text-slate-600">
-                            {new Date(r.createdAt).toLocaleString()}
-                          </td>
-                        </tr>
-                      ))}
+                      {visibleReports.map((r) => {
+                        const reportUrl = metadataUrl(r.metadataJson);
+                        const href = reportUrl ? safeHttpUrl(reportUrl) : null;
+                        const happened = whatHappened(r.metadataJson);
+
+                        return (
+                          <tr
+                            key={r.id}
+                            className="cursor-pointer text-sm hover:bg-slate-50"
+                            onClick={() => setActiveReport(r)}
+                          >
+                            <td className="px-4 py-3 text-slate-700">
+                              {r.module}
+                            </td>
+                            <td className="px-4 py-3 text-slate-700">
+                              {impactLabel(r.impactLevel)}
+                            </td>
+                            <td className="px-4 py-3 text-slate-700">
+                              {href ? (
+                                <a
+                                  className="block truncate text-blue-600 hover:underline"
+                                  href={href}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  title={reportUrl ?? undefined}
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  {reportUrl}
+                                </a>
+                              ) : (
+                                <div className="truncate" title={reportUrl ?? undefined}>
+                                  {reportUrl ?? "—"}
+                                </div>
+                              )}
+                            </td>
+                            <td className="px-4 py-3 text-slate-700">
+                              <div className="whitespace-pre-wrap break-words">
+                                {happened ?? "—"}
+                              </div>
+                            </td>
+                            <td className="px-4 py-3">
+                              <button
+                                type="button"
+                                className="rounded border border-slate-300 bg-white px-3 py-1.5 text-sm hover:bg-slate-50"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  onToggleStatus(r);
+                                }}
+                              >
+                                {statusLabel(r.status)}
+                              </button>
+                            </td>
+                            <td className="px-4 py-3 text-slate-600">
+                              {new Date(r.createdAt).toLocaleString()}
+                            </td>
+                          </tr>
+                        );
+                      })}
                       {!busy && visibleReports.length === 0 && (
                         <tr>
                           <td
                             className="px-4 py-6 text-sm text-slate-500"
-                            colSpan={5}
+                            colSpan={6}
                           >
                             No feedback reports yet.
                           </td>
